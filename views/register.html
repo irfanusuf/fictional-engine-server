@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>login</title>
+    <title>register</title>
 
     <style>
       .container {
@@ -48,10 +48,11 @@
 
   <body>
     <div class="container">
-      <h1>Login with Us</h1>
+      <h1>Register with Us</h1>
 
-      <form method="post" action="/user/login">
-      
+      <form method="post" action="/user/register">
+        <label> username</label>
+        <input placeholder="Enter your username " type="text" name="username" />
 
         <label> Email</label>
         <input placeholder="Enter your Email " type="email" name="email" />
@@ -61,12 +62,9 @@
           placeholder="Enter your username "
           type="password"
           name="password"
-        />  
-
-        <a href="/user/forgot"> Forgot password </a>
-        <a href="/user/register"> Not an User ? Register !</a>
-
-        <button type="submit">Login</button>
+        />
+          <a href="/user/login"> Already an User ? Login </a>
+        <button type="submit">Register</button>
       </form>
     </div>
   </body>
