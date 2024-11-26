@@ -6,7 +6,6 @@ const registerController = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-
     if (username === "" || email === "" || password === "") {
       return res.json({ message: "All user credentials required " });
     }
@@ -64,19 +63,40 @@ const loginController = async (req, res) => {
       secretkey
     );
 
-    res
-      .status(200)
-      .json({
-        message: "logged in succesfully",
-        payload: token,
-      });
+    res.status(200).json({
+      message: "logged in succesfully",
+      payload: token,
+    });
   } catch (error) {
     console.log(error);
   }
 };
 
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find();
 
+    res.json({ message: `${users.length} users Found `, users });
+  } catch (error) {
+    console.error(error);
+  }
+};
 
+const getUserById = async (req, res) => {
+  try {
 
+    const userId = req.userId
 
-module.exports = { registerController, loginController };
+    const user = await User.findById(userId);
+
+    if(!user){
+     return res.json ({message : "No user Found"})
+    }
+
+    res.json({ message: ` user Found `, user});
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+module.exports = { registerController, loginController, getUsers , getUserById };

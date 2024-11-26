@@ -2,8 +2,10 @@ const express = require("express")      // importing express from node modules
 const { connectDb } = require("./config/connectDb")    // modeule import
 const app = express()
 const path = require("path")
+const cors = require("cors")
 const bodyParser = require("body-parser")
-const { registerController, loginController } = require("./controllers/userController")
+const { registerController, loginController, getUsers, getUserById } = require("./controllers/userController")
+const { isAuthorised } = require("./middleware/isAuthorised")
 
 const port = 4001
 
@@ -17,6 +19,7 @@ connectDb()
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json())
+app.use(cors())
 
 
 app.get("/" , (req , res)=>{res.sendFile(path.join(__dirname , "views" , "index.html"))})
@@ -26,6 +29,8 @@ app.get("/user/login" , (req,res) =>{ res.sendFile(path.join(__dirname , "views"
 
 app.post("/user/register" , registerController  )
 app.post("/user/login" , loginController )
+app.get("/user/getAll" , getUsers)
+app.get("/user/getUser/:token" , isAuthorised , getUserById)
 
 
 
