@@ -30,7 +30,9 @@ app.get("/user/login" , (req,res) =>{ res.sendFile(path.join(__dirname , "views"
 app.post("/user/register" , registerController  )
 app.post("/user/login" , loginController )
 app.get("/user/getAll" , getUsers)
-app.get("/user/getUser/:token" , isAuthorised , getUserById)
+
+
+app.get("/user/getUser" , isAuthorised , getUserById)
 
 
 
