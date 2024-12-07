@@ -6,6 +6,7 @@ const cors = require("cors")
 const bodyParser = require("body-parser")
 const { registerController, loginController, getUsers, getUserById } = require("./controllers/userController")
 const { isAuthorised } = require("./middleware/isAuthorised")
+const { verfiyToken } = require("./controllers/authController")
 
 const port = 4001
 
@@ -31,6 +32,7 @@ app.post("/user/register" , registerController  )
 app.post("/user/login" , loginController )
 app.get("/user/getAll" , getUsers)
 
+app.get("/token/verify" , verfiyToken)
 
 app.get("/user/getUser" , isAuthorised , getUserById)
 
