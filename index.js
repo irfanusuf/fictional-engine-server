@@ -4,7 +4,7 @@ const app = express()
 const path = require("path")
 const cors = require("cors")
 const bodyParser = require("body-parser")
-const { registerController, loginController, getUsers, getUserById } = require("./controllers/userController")
+const { registerController, loginController, getUsers, getUserById, deleteUser, updatePassWord } = require("./controllers/userController")
 const { isAuthorised } = require("./middleware/isAuthorised")
 const { verfiyToken } = require("./controllers/authController")
 
@@ -31,12 +31,12 @@ app.get("/user/login" , (req,res) =>{ res.sendFile(path.join(__dirname , "views"
 app.post("/user/register" , registerController  )
 app.post("/user/login" , loginController )
 app.get("/user/getAll" , getUsers)
+app.get("/user/getUser" , isAuthorised , getUserById)
+app.delete("/user/delete" , isAuthorised , deleteUser)
+app.put("/user/updatePass" , isAuthorised , updatePassWord )
+
 
 app.get("/token/verify" , verfiyToken)
-
-app.get("/user/getUser" , isAuthorised , getUserById)
-
-
 
 app.listen(port , ()=>{
 

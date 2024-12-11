@@ -1,6 +1,7 @@
 const { User } = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { messageHandler } = require("../utils/messageHandler");
 
 const registerController = async (req, res) => {
   try {
@@ -64,7 +65,7 @@ const loginController = async (req, res) => {
       payload: token,
     });
   } catch (error) {
-    res.status(500)
+    res.status(500);
     console.log(error);
   }
 };
@@ -81,19 +82,89 @@ const getUsers = async (req, res) => {
 
 const getUserById = async (req, res) => {
   try {
-
-    const userId = req.userId
+    const userId = req.userId;
 
     const user = await User.findById(userId);
 
-    if(!user){
-     return res.json ({message : "No user Found"})
+    if (!user) {
+      return res.json({ message: "No user Found" });
     }
 
-    res.json({ message: ` user Found `, user});
+    res.json({ message: ` user Found `, user });
   } catch (error) {
     console.error(error);
   }
 };
 
-module.exports = { registerController, loginController, getUsers , getUserById };
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return messageHandler(res, 404, "User not Found!");
+    }
+
+    const { password } = req.body;
+
+    const verifyPass = await bcrypt.compare(password, user.password);
+
+    if (!verifyPass) {
+      return messageHandler(res, 400, "incorrect Password");
+    }
+
+    const remove = await User.findByIdAndDelete(userId);
+
+    if (remove) {
+      return messageHandler(res, 200, "User Deleted Succesfully");
+    } else {
+      return messageHandler(res, 500, "Some Error");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const updatePassWord = async (req, res) => {
+  try {
+    const userId = req.userId;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return messageHandler(res, 404, "User not Found!");
+    }
+
+    const { oldPass, newPass, confirmPass } = req.body;
+
+    const verifyPass = await bcrypt.compare(oldPass, user.password);
+
+    if (!verifyPass) {
+      return messageHandler(res, 400, "incorrect Password");
+    }
+
+    if (newPass === confirmPass) {
+      const encryptNewPass = await bcrypt.hash(newPass, 10);
+
+      user.password = encryptNewPass;
+
+      const updateDb = await user.save();
+
+      return messageHandler(res, 200, "Password Updated Sucessfully!" , updateDb );
+    } else {
+      return messageHandler(res, 400, "Two passwords Doesnt match" );
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+module.exports = {
+  registerController,
+  loginController,
+  getUsers,
+  getUserById,
+  deleteUser,
+  updatePassWord,
+};
