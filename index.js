@@ -4,7 +4,7 @@ const app = express()
 const path = require("path")
 const cors = require("cors")
 const bodyParser = require("body-parser")
-const { registerController, loginController, getUsers, getUserById, deleteUser, updatePassWord } = require("./controllers/userController")
+const { registerController, loginController, getUsers, getUserById, deleteUser, updatePassWord, forgotPass, changePass } = require("./controllers/userController")
 const { isAuthorised } = require("./middleware/isAuthorised")
 const { verfiyToken } = require("./controllers/authController")
 
@@ -34,6 +34,9 @@ app.get("/user/getAll" , getUsers)
 app.get("/user/getUser" , isAuthorised , getUserById)
 app.delete("/user/delete" , isAuthorised , deleteUser)
 app.put("/user/updatePass" , isAuthorised , updatePassWord )
+
+app.post("/user/forgot-pass" , forgotPass )
+app.put("/user/change-pass" ,  changePass )
 
 
 app.get("/token/verify" , verfiyToken)

@@ -2,6 +2,8 @@ const { User } = require("../models/userModel");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { messageHandler } = require("../utils/messageHandler");
+const { transporter } = require("../utils/nodemailGamil");
+// const { transporter } = require("../utils/nodeMailer");
 
 const registerController = async (req, res) => {
   try {
@@ -160,6 +162,108 @@ const updatePassWord = async (req, res) => {
   }
 };
 
+
+const forgotPass = async (req,res) =>{
+
+  try {
+    
+     const {email} = req.body
+
+     const user = await User.findOne({email})
+
+     if(!user){
+      return messageHandler(res , 404 , "user not found")
+     }
+
+     const passwordResetLink = `http:localhost:4000/user/change-pass/?userId=${user._id}`  // front end page link 
+     const otp = ""
+
+   const sendMail =  await transporter.sendMail({
+      from: "irfanusuf33@gmail.com",
+      to :email,
+      subject: "Password reset Link ",
+      text: passwordResetLink,
+      html : "<h3> Your password reset link is here   </h3>"
+ })
+
+   if(sendMail){
+    return messageHandler(res , 200 , "We have sent mail with password reset link  to your registered mail . Kindly check your mail  ")
+   }
+   else{
+    return messageHandler(res , 400 , "something went wrong")
+   }
+
+
+
+
+    // transporter.sendMail(
+    //   {
+    //     from: "services@stylehouse.world",
+    //     to: email,
+    //     // bcc : "services@stylehouse.world",
+    //     subject: "Password reset Link ",
+    //     text: passwordResetLink,
+    //     // html : "<h1> ur pass link is here all the css in the html string will be inline </h1>"
+    //   },
+    //   (reject, resolve) => {
+    //     if (reject) {
+    //       console.log(reject);
+    //       return res.status(500).json({ message: "Server Error" });
+    //     }
+
+    //     return res.status(200).json({
+    //       message: "Password Rest link sent to your mail Succesfully",
+    //     });
+    //   }
+    // );
+
+
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+
+const changePass = async(req,res) =>{
+
+
+  try {
+
+    const {newPass , confirmPass} = req.body
+    const {userId} = req.query
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return messageHandler(res, 404, "User not Found!");
+    }
+
+    if (newPass === confirmPass) {
+      const encryptNewPass = await bcrypt.hash(newPass, 10);
+
+      user.password = encryptNewPass;
+
+      const updateDb = await user.save();
+
+      return messageHandler(res, 200, "Password changed Sucessfully!" , updateDb );
+    } else {
+      return messageHandler(res, 400, "Two passwords Doesnt match" );
+    }
+
+
+
+    
+  } catch (error) {
+    console.log(error)
+  }
+
+
+
+}
+
+
+
 module.exports = {
   registerController,
   loginController,
@@ -167,4 +271,6 @@ module.exports = {
   getUserById,
   deleteUser,
   updatePassWord,
+  forgotPass,
+  changePass
 };
