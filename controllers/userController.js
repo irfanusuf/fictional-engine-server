@@ -56,7 +56,7 @@ const loginController = async (req, res) => {
     if (!passverify) {
       return res.json({ message: "Incorrect password" });
     }
-    const secretkey = "randomstringkuchbhuikjhfnsuyhfsjuh";
+    const secretkey = process.env.SECRET_KEY
     const token = await jwt.sign(
       { role: "user", userId: finduser._id },
       secretkey
