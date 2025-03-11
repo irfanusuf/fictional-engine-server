@@ -10,13 +10,19 @@ const registerController = async (req, res) => {
     const { username, email, password } = req.body;
 
     if (username === "" || email === "" || password === "") {
-      return res.json({ message: "All user credentials required " });
+      return res.render("register", {
+        title: "Register",
+        ErrorMessage: "All user credentials required ",
+      });
     }
 
     const checkUser = await User.findOne({ email });
 
     if (checkUser) {
-      return res.json({ message: "User with this email already exists!" });
+      return res.render("register", {
+        title: "Register",
+        ErrorMessage: "User with this email already exists!",
+      });
     }
 
     const encrytedPass = await bcrypt.hash(password, 10);
@@ -28,9 +34,13 @@ const registerController = async (req, res) => {
     });
 
     if (newUser) {
-      return res.json({ message: "User Created Sucessfully!" });
+      // return res.render( "register" , { title : "Register" ,  SuccessMessage: "User Created Sucessfully!" });    OR
+      return res.redirect("/user/login");
     } else {
-      return res.json({ message: "Some error during creating user" });
+      return res.render("register", {
+        title: "Register",
+        ErrorMessage: "Some error during creating user",
+      });
     }
   } catch (error) {
     console.log(error);
@@ -42,35 +52,54 @@ const loginController = async (req, res) => {
     const { email, password } = req.body;
 
     if (email === "" || password === "") {
-      return res.json({ message: "Email and password both required" });
+      return res.render("login", {
+        title: "Login",
+        ErrorMessage: "Email and password both required",
+      });
     }
 
     const finduser = await User.findOne({ email });
 
     if (!finduser) {
-      return res.json({ message: "User with this email not found" });
+      return res.render("login", {
+        title: "Login",
+        ErrorMessage: "User with this email not found",
+      });
     }
-
     const passverify = await bcrypt.compare(password, finduser.password);
-
     if (!passverify) {
-      return res.json({ message: "Incorrect password" });
+      return res.render("login", {
+        title: "Login",
+        ErrorMessage: "Incorrect password",
+      });
     }
-    const secretkey = "randomstringkuchbhuikjhfnsuyhfsjuh";
-    const token = await jwt.sign(
+    const secretkey = process.env.SECRET_KEY;
+
+    const token =  jwt.sign(
       { role: "user", userId: finduser._id },
       secretkey
     );
 
-    res.json({
-      message: "Logged in succesfully!",
-      payload: token,
+    res.cookie("token", token, {
+      maxAge: 24 * 60 * 60 * 1000,
     });
+    
+
+    // res.render("login", {
+    //   title: "Login",
+    //   SuccessMessage: "Logged in succesfully!",
+    // });
+
+   res.redirect("/dashboard")
+
   } catch (error) {
-    res.status(500);
+    res.render("error", { title: "Error" , ErrorMessage :  error.message });
     console.log(error);
   }
 };
+
+
+
 
 const getUsers = async (req, res) => {
   try {
@@ -153,48 +182,50 @@ const updatePassWord = async (req, res) => {
 
       const updateDb = await user.save();
 
-      return messageHandler(res, 200, "Password Updated Sucessfully!" , updateDb );
+      return messageHandler(
+        res,
+        200,
+        "Password Updated Sucessfully!",
+        updateDb
+      );
     } else {
-      return messageHandler(res, 400, "Two passwords Doesnt match" );
+      return messageHandler(res, 400, "Two passwords Doesnt match");
     }
   } catch (error) {
     console.log(error);
   }
 };
 
-
-const forgotPass = async (req,res) =>{
-
+const forgotPass = async (req, res) => {
   try {
-    
-     const {email} = req.body
+    const { email } = req.body;
 
-     const user = await User.findOne({email})
+    const user = await User.findOne({ email });
 
-     if(!user){
-      return messageHandler(res , 404 , "user not found")
-     }
+    if (!user) {
+      return messageHandler(res, 404, "user not found");
+    }
 
-     const passwordResetLink = `http:localhost:4000/user/change-pass/?userId=${user._id}`  // front end page link 
-     const otp = ""
+    const passwordResetLink = `http:localhost:4000/user/change-pass/?userId=${user._id}`; // front end page link
+    const otp = "";
 
-   const sendMail =  await transporter.sendMail({
+    const sendMail = await transporter.sendMail({
       from: "irfanusuf33@gmail.com",
-      to :email,
+      to: email,
       subject: "Password reset Link ",
       text: passwordResetLink,
-      html : "<h3> Your password reset link is here   </h3>"
- })
+      html: "<h3> Your password reset link is here   </h3>",
+    });
 
-   if(sendMail){
-    return messageHandler(res , 200 , "We have sent mail with password reset link  to your registered mail . Kindly check your mail  ")
-   }
-   else{
-    return messageHandler(res , 400 , "something went wrong")
-   }
-
-
-
+    if (sendMail) {
+      return messageHandler(
+        res,
+        200,
+        "We have sent mail with password reset link  to your registered mail . Kindly check your mail  "
+      );
+    } else {
+      return messageHandler(res, 400, "something went wrong");
+    }
 
     // transporter.sendMail(
     //   {
@@ -216,22 +247,15 @@ const forgotPass = async (req,res) =>{
     //     });
     //   }
     // );
-
-
-
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
+};
 
-
-const changePass = async(req,res) =>{
-
-
+const changePass = async (req, res) => {
   try {
-
-    const {newPass , confirmPass} = req.body
-    const {userId} = req.query
+    const { newPass, confirmPass } = req.body;
+    const { userId } = req.query;
 
     const user = await User.findById(userId);
 
@@ -246,23 +270,19 @@ const changePass = async(req,res) =>{
 
       const updateDb = await user.save();
 
-      return messageHandler(res, 200, "Password changed Sucessfully!" , updateDb );
+      return messageHandler(
+        res,
+        200,
+        "Password changed Sucessfully!",
+        updateDb
+      );
     } else {
-      return messageHandler(res, 400, "Two passwords Doesnt match" );
+      return messageHandler(res, 400, "Two passwords Doesnt match");
     }
-
-
-
-    
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-
-
-
-}
-
-
+};
 
 module.exports = {
   registerController,
@@ -272,5 +292,5 @@ module.exports = {
   deleteUser,
   updatePassWord,
   forgotPass,
-  changePass
+  changePass,
 };

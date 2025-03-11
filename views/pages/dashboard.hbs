@@ -1,0 +1,35 @@
+<style>
+    .users {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 100px;
+
+
+        >.user{
+            width: 400px;
+            height: 600px;
+            border: 1px solid black;
+        }
+    }
+</style>
+
+
+
+
+
+<div class="users">
+
+    {{#each usersARR }}
+    <div class="user">
+        <p> Username : {{this.username}} </p>
+        <p> {{this.email}}</p>
+        {{!-- <p> {{this.password}}</p> --}}
+
+        <a href="/user/details/{{this._id}}"> Details </a>
+    </div>
+
+    {{/each}}
+
+</div>
