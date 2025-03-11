@@ -1,35 +1,10 @@
-<style>
-    .users {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 100px;
-
-
-        >.user{
-            width: 400px;
-            height: 600px;
-            border: 1px solid black;
-        }
-    }
-</style>
-
-
-
-
-
-<div class="users">
-
-    {{#each usersARR }}
-    <div class="user">
-        <p> Username : {{this.username}} </p>
-        <p> {{this.email}}</p>
-        {{!-- <p> {{this.password}}</p> --}}
-
-        <a href="/user/details/{{this._id}}"> Details </a>
-    </div>
-
-    {{/each}}
-
+<div class="w-64 bg-white shadow-lg rounded-lg p-4">
+  <h1 class="text-2xl font-bold mb-4 text-gray-800">Dashboard</h1>
+  
+  <nav class="flex flex-col space-y-2">
+    <a href="/blog/create" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition">Create Blog</a>
+    <a href="/blog/getAll" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition">Blog List</a>
+    <a href="/blog/archived" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition">Archived List</a>
+    <a href="/blog/deleted" class="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition">Deleted List</a>
+  </nav>
 </div>

@@ -6,13 +6,13 @@ const isAuthorised = async (req, res, next) => {
     const {token} = req.cookies;
 
     if (!token) {
-      return res.status(403).json({ message: "unaAuthorised" });
+      return res.render("login" , {errorMessage : "Unauthorised Kindly login again!"});
     }
     const secretkey = "randomstringkuchbhuikjhfnsuyhfsjuh";
 
-    const verifyToken = jwt.verify(token, secretkey, (reject, resolve) => {
+     jwt.verify(token, secretkey, (reject, resolve) => {
       if (reject) {
-        return res.status(401).json({ message: "Forbidden" });
+        return res.render("login" , {errorMessage : "Foribidden , Kindly Try after sometime !"});
       }
 
       req.userId = resolve.userId;

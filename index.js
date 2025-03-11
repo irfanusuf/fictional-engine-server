@@ -19,6 +19,7 @@ const {
 const { isAuthorised } = require("./middleware/isAuthorised");
 const { verfiyToken } = require("./controllers/authController");
 const { userDashboard, getUserDetails } = require("./controllers/getController");
+const { createBlog, getCreateBlogPage, getAllBlogs } = require("./controllers/blogController");
 require("dotenv").config();
 
 const port = process.env.PORT;
@@ -46,20 +47,28 @@ app.use(express.static(path.join(__dirname, "static")));   // static files path
 app.use(cookieParser())
 
 // server rendered pages
-app.get("/", (req, res) => {
-  res.render("landingPage");
-});
+app.get("/", (req, res) => {res.render("landingPage");});
+app.get("/user/register", (req, res) => {res.render("register", { title: "Register" });});
+app.get("/user/login", (req, res) => { res.render("login", { title: "Login" });});
 
-app.get("/user/register", (req, res) => {
-  res.render("register", { title: "Register" });
-});
+// secure dashboard
+app.get("/user/dashboard"  , isAuthorised ,  userDashboard)
+app.get("/user/details/:userId" ,isAuthorised ,  getUserDetails )
 
-app.get("/user/login", (req, res) => {
-  res.render("login", { title: "Login" });
-});
+// secure blogging routes
 
-app.get("/user/dashboard" , userDashboard)
-app.get("/user/details/:userId" , getUserDetails )
+app.get("/blog/create"  , isAuthorised ,  getCreateBlogPage)
+app.post("/blog/create"  , isAuthorised ,  createBlog)
+app.get("/blog/getAll"  , isAuthorised ,  getAllBlogs)
+
+
+// app.get("/blog/deleted"  , isAuthorised ,  userDashboard)
+// app.get("/blog/archived"  , isAuthorised ,  userDashboard)
+
+// app.get("/blog/:blogId"  , isAuthorised ,  userDashboard)
+
+
+
 
 
 app.post("/user/register", registerController); // done
@@ -87,5 +96,5 @@ app.get("/token/verify", verfiyToken);
 
 
 app.listen(port, () => {
-  console.log(`server listening on port `);
+  console.log(`server listening on port ${port}`);
 });

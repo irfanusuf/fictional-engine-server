@@ -1,0 +1,36 @@
+<div class="max-w-4xl mx-auto bg-white p-6 shadow-md rounded-lg">
+  <h2 class="text-2xl font-bold mb-4 text-center">My Blogs</h2>
+
+  {{#if blogsARR.length}}
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse border border-gray-200 shadow-sm">
+        <thead class="bg-gray-100">
+          <tr>
+            <th class="border border-gray-300 px-4 py-2 text-left">Title</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Short Description</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Image</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Category</th>
+            <th class="border border-gray-300 px-4 py-2 text-left">Actions</th>
+          </tr>
+        </thead>My Blogs
+        
+        <tbody>
+          {{#each blogsARR}}    
+            <tr class="hover:bg-gray-50">
+              <td class="border border-gray-300 px-4 py-2">{{this.blogTitle}}</td>
+              <td class="border border-gray-300 px-4 py-2">{{this.blogDescShort}}</td>
+              <td class="border border-gray-300 px-4 py-2"> <img src="{{this.blogImageUrl}}" width="100"> </td>
+              <td class="border border-gray-300 px-4 py-2">{{this.category}}</td>
+              <td class="border border-gray-300 px-4 py-2">
+                <a href="/blogs/edit/{{this._id}}" class="text-blue-500 hover:underline">Edit</a> |
+                <a href="/blogs/delete/{{this._id}}" class="text-red-500 hover:underline">Delete</a>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{else}}
+    <p class="text-center text-gray-500">No blogs found.</p>
+  {{/if}}
+</div>

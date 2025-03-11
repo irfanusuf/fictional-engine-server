@@ -90,7 +90,7 @@ const loginController = async (req, res) => {
     //   SuccessMessage: "Logged in succesfully!",
     // });
 
-   res.redirect("/dashboard")
+   res.redirect("/user/dashboard")
 
   } catch (error) {
     res.render("error", { title: "Error" , ErrorMessage :  error.message });
