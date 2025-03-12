@@ -17,6 +17,23 @@ const getAllBlogs = async (req,res) =>{
     return res.render("blogsList" , {blogsARR : blogs})
 }
 
+const getBlogs = async (req,res) =>{
+
+ 
+  const blogs = await Blog.find().lean()
+
+  return res.render("blogs" , {blogsARR : blogs})
+}
+
+const getBlogbyId = async (req,res) =>{
+
+  const {blogId} = req.params
+ 
+  const blog = await Blog.findById(blogId).lean()
+
+  return res.render("blog" , {blogTitle : blog.blogTitle , blogDesc : blog.blogDesc})
+}
+
 
 
 const createBlog = async (req, res) => {
@@ -53,4 +70,4 @@ const createBlog = async (req, res) => {
 
 
 
-module.exports = { createBlog  , getCreateBlogPage , getAllBlogs};
+module.exports = { createBlog  , getCreateBlogPage , getAllBlogs , getBlogs , getBlogbyId};

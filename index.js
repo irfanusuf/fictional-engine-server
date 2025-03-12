@@ -19,7 +19,8 @@ const {
 const { isAuthorised } = require("./middleware/isAuthorised");
 const { verfiyToken } = require("./controllers/authController");
 const { userDashboard, getUserDetails } = require("./controllers/getController");
-const { createBlog, getCreateBlogPage, getAllBlogs } = require("./controllers/blogController");
+const { createBlog, getCreateBlogPage, getAllBlogs, getBlogs, getBlogbyId } = require("./controllers/blogController");
+const { helpers } = require("handlebars");
 require("dotenv").config();
 
 const port = process.env.PORT;
@@ -36,7 +37,8 @@ app.engine(
     defaultLayout: "layout",
     layoutsDir: path.join(__dirname, "views", "layout"),
     partialsDir: path.join(__dirname, "views", "partials"),
-  })
+  }),
+
 );
 
 //middleware
@@ -56,6 +58,8 @@ app.get("/user/dashboard"  , isAuthorised ,  userDashboard)
 app.get("/user/details/:userId" ,isAuthorised ,  getUserDetails )
 
 // secure blogging routes
+app.get("/blogs" , getBlogs)
+app.get("/blogs/:blogId" , getBlogbyId)
 
 app.get("/blog/create"  , isAuthorised ,  getCreateBlogPage)
 app.post("/blog/create"  , isAuthorised ,  createBlog)
