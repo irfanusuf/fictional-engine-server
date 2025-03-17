@@ -1,0 +1,121 @@
+<link href="https://cdn.jsdelivr.net/npm/froala-editor@latest/css/froala_editor.pkgd.min.css" rel="stylesheet">
+
+
+
+{{#if
+errorMessage}} <p class="text-red-500 font-bold">{{errorMessage}}</p>
+{{else}}
+<div class="max-w-[1400px] mx-auto bg-white p-6 shadow-md rounded-lg">
+    <h2 class="text-xl font-bold mb-4">Edit Blog</h2>
+
+
+    <form class="space-y-4">
+
+        <label class="block">
+            <span class="text-gray-700">Blog Title</span>
+            <input type="text" id="blogTitle" value="{{blogTitle}}"
+                class="mt-1 block w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300" required>
+        </label>
+
+
+
+        <label class="block">
+            <span class="text-gray-700">Short Description</span>
+            <input type="text" id="blogDescShort" value="{{blogDescShort}}"
+                class="mt-1 block w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300" required>
+        </label>
+
+        <label class="block">
+            <span class="text-gray-700">Image URL</span>
+            <input type="text" id="blogImageUrl" value="{{blogImageUrl}}"
+                class="mt-1 block w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300" required>
+        </label>
+
+
+        <label class="block">
+            <span class="text-gray-700">Category</span>
+            <input type="text" id="category" value="{{category}}"
+                class="mt-1 block w-full px-4 py-2 border rounded-md focus:ring focus:ring-blue-300" required>
+        </label>
+
+
+        <label class="block">
+            <span class="text-gray-700">Blog Description</span>
+        </label>
+        <textarea name="blogDesc" id="blogDesc" required> {{blogDesc}}</textarea>
+
+        <button type="submit" id="submit"
+            class="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700">Update</button>
+    </form>
+</div>
+
+
+{{/if}}
+
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/froala-editor@latest/js/froala_editor.pkgd.min.js"></script>
+
+
+<script>
+
+
+    const editor = new FroalaEditor("#blogDesc", {
+        placeholderText: "Write your blog here...",
+        heightMin: 600
+    });
+
+
+
+
+    document.getElementById("submit").addEventListener("click", async (event) => {
+
+        event.preventDefault()
+
+        const blogTitle = document.getElementById("blogTitle").value
+        const blogDescShort = document.getElementById("blogDescShort").value
+        const blogImageUrl = document.getElementById("blogImageUrl").value
+        const category = document.getElementById("category").value
+        const blogDesc = editor.html.get()
+
+
+        const formBody = { blogTitle, blogDesc, blogDescShort, blogImageUrl, category }
+
+        try {
+
+
+
+            const currentUrl = window.location.href;
+
+            const blogId = currentUrl.split('/').pop();
+           
+            const res = await fetch(`/blog/edit/${blogId}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ blogTitle, blogDesc, blogDescShort, blogImageUrl, category })
+            })
+            const data = await res.json()
+
+            if (data.message === "Blog Updated Succesfully") {
+                window.location.href = "/blogs"
+            }
+            else {
+                window.alert("some Error")
+            }
+
+        }
+        catch (error) {
+            console.log(error)
+        }
+
+
+    })
+
+
+
+
+</script>

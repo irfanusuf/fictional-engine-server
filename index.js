@@ -19,8 +19,7 @@ const {
 const { isAuthorised } = require("./middleware/isAuthorised");
 const { verfiyToken } = require("./controllers/authController");
 const { userDashboard, getUserDetails } = require("./controllers/getController");
-const { createBlog, getCreateBlogPage, getAllBlogs, getBlogs, getBlogbyId } = require("./controllers/blogController");
-const { helpers } = require("handlebars");
+const { createBlog, getCreateBlogPage, getAllBlogs, getBlogs, getBlogbyId, editBlog, getEditBlog } = require("./controllers/blogController");
 require("dotenv").config();
 
 const port = process.env.PORT;
@@ -63,6 +62,14 @@ app.get("/blogs/:blogId" , getBlogbyId)
 
 app.get("/blog/create"  , isAuthorised ,  getCreateBlogPage)
 app.post("/blog/create"  , isAuthorised ,  createBlog)
+
+
+
+app.get("/blog/edit/:blogId" , isAuthorised , getEditBlog)
+app.post("/blog/edit/:blogId" , isAuthorised , editBlog)
+
+
+
 app.get("/blog/getAll"  , isAuthorised ,  getAllBlogs)
 
 
